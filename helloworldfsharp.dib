@@ -41,38 +41,34 @@ This part is creating model of the prediction data for the Taxi Trip and the tax
 
 #!fsharp
 
-type TaxiTrip = 
-    {
-        [<LoadColumn(0)>]
-        VendorId: string;
+type TaxiTrip() = 
+    [<LoadColumn(0)>]
+    member val VendorId: string = "" with get, set
 
-        [<LoadColumn(1)>]
-        RateCode: string;
+    [<LoadColumn(1)>]
+    member val RateCode: string = "" with get, set
+    
+    [<LoadColumn(2)>]
+    member val PassengerCount: float = 0.0 with get, set
+    
+    [<LoadColumn(3)>]
+    member val TripTime: float = 0.0 with get, set
+    
+    [<LoadColumn(4)>]
+    member val TripDistance: float = 0.0 with get, set
+    
+    [<LoadColumn(5)>]
+    member val PaymentType: string = "" with get, set
+    
+    [<LoadColumn(6)>]
+    member val FareAmount: float = 0.0 with get, set
 
-        [<LoadColumn(2)>]
-        PassengerCount: float;
+type TaxiTripFarePrediction() =
+    [<ColumnName("Score")>]
+    member val FareAmount: Single = 0.0f with get, set
 
-        [<LoadColumn(3)>]
-        TripTime: float;
-
-        [<LoadColumn(4)>]
-        TripDistance: float;
-
-        [<LoadColumn(5)>]
-        PaymentType: string;
-
-        [<LoadColumn(6)>]
-        FareAmount: float;
-    }
-
-type TaxiTripFarePrediction =
-    {
-        [<ColumnName("Score")>]
-        FareAmount: float;
-    } 
-
-let createDefaultPrediction () =
-    { FareAmount = 0.0 }
+    member this.Score =
+        this.FareAmount
 
 #!markdown
 
@@ -162,15 +158,24 @@ printfn "MSE: %f" metrics.MeanSquaredError;
 
 #!fsharp
 
-let taxiTripSample: TaxiTrip = 
-    {
-        VendorId = "VTS"
-        RateCode = "1"
-        PassengerCount = 1.0
-        TripTime = 1140.0
-        TripDistance = 3.75
-        PaymentType = "CRD"
-        FareAmount = 0.0 // To predict. Actual/Observed = 15.5
-    };
+let taxiTripSample: TaxiTrip = new TaxiTrip();
+taxiTripSample.VendorId <- "VTS";
+taxiTripSample.RateCode <- "1";
+taxiTripSample.PassengerCount <- 1.0;
+taxiTripSample.TripTime <- 1140.0;
+taxiTripSample.TripDistance <- 3.75;
+taxiTripSample.PaymentType <- "CRD";
+taxiTripSample.FareAmount <- 0.0;
 
-let predictionFunction = mlContext.Model.CreatePredictionEngine<TaxiTrip, TaxiTripFarePrediction>(model)
+let predictionFunction = mlContext.Model.CreatePredictionEngine<TaxiTrip, TaxiTripFarePrediction>(model);
+
+let prediction = predictionFunction.Predict(taxiTripSample);
+
+printfn "*************************************************";
+printfn "               Prediction result                 ";
+printfn "*************************************************";
+printfn "*                                               *";
+printfn "*                                               *";
+printfn "            %f , actual fare: 15.5          " prediction.FareAmount;
+printfn "*                                               *";
+printfn "*                                               *";
