@@ -1,4 +1,4 @@
-name: learn-cnn
+name: learn_cnn
 channels:
   - conda-forge
   - defaults
