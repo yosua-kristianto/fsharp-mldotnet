@@ -9,3 +9,8 @@ The Python mainly using conda environment while F# using NuGet.
 >
 > To export conda environment to yml file:
 > `conda env export > environment.yml`
+>
+> To create new conda environment
+> `conda create --name=myenv`
+>
+>
